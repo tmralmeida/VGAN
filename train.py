@@ -4,7 +4,7 @@ import torch
 from torchvision import datasets, transforms
 from models.vgan import *
 from utils.vgan import *
-
+import os
 
 
 parser = argparse.ArgumentParser(description="Train VGAN")
@@ -122,10 +122,16 @@ if args.dataset == "CIFAR-10":
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
     train_ds = datasets.CIFAR10(root = "./data", 
-                            train = True,
-                            download = False if os.path.isdir("data") else True,
-                            transform = trans)
+                                train = True,
+                                download = False if os.path.isdir("data/cifar-10-batches-py") else True,
+                                transform = trans)
     inp_size = (3, 32, 32)
+elif args.dataset == "MNIST":
+    train_ds = datasets.MNIST(root = "./data", 
+                              train = True,
+                              download = False if os.path.isdir("data/MNIST") else True,
+                              transform = transforms.ToTensor())
+    inp_size = (1, 28, 28)
 else:
     raise ValueError(f"{args.dataset} not implemented yet")
 
@@ -164,8 +170,8 @@ for epoch in range(args.epochs):
             losses_g.append(loss_g)
             tepoch.set_postfix(loss_disc = sum(losses_d)/(len(losses_d)),loss_gen = sum(losses_g)/(len(losses_g)))
         if (epoch == 0) or ((epoch + 1) % 10 == 0):
-            generate_samples(epoch, gen, device, nimgs_save = args.nimgs_save, log_dir=args.save_dir)
+            generate_samples(epoch, gen, device, nimgs_save = args.nimgs_save, log_dir=os.path.join(args.save_dir, args.dataset))
         
         
-torch.save(gen.state_dict(), os.path.join(args.save_dir, 'gen.pth'))
-torch.save(disc.state_dict(), os.path.join(args.save_dir, 'disc.pth'))
+torch.save(gen.state_dict(), os.path.join(args.save_dir, f'{args.dataset}/gen.pth'))
+torch.save(disc.state_dict(), os.path.join(args.save_dir, f'{args.dataset}/disc.pth'))
