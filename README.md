@@ -5,7 +5,7 @@ It has been tested on both RGB and grayscale datatypes through CIFAR-10, MNIST, 
 
 ## Usage
 
-Run train [``train.py``]() with the respective options:
+Run train [``train.py``](https://github.com/tmralmeida/VGAN/blob/main/train.py) with the respective options:
 
 ```
 python train.py [-h] [--dataset  {CIFAR-10, MNIST, FER-2013}] 
