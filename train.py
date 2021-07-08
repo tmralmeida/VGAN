@@ -21,7 +21,7 @@ parser.add_argument(
     default="CIFAR-10",
     required=False,
     help="Dataset name",
-    choices=["CIFAR-10", "MNIST", "FER-2013"]
+    choices=["CIFAR-10", "FER-2013"]
 )
 
 parser.add_argument(
@@ -131,12 +131,6 @@ if args.dataset == "CIFAR-10":
                                 transform = train_trans)
     inp_size = (3, 32, 32)
     
-elif args.dataset == "MNIST":
-    train_ds = datasets.MNIST(root = "./data", 
-                              train = True,
-                              download = False if os.path.isdir("data/MNIST") else True,
-                              transform = transforms.ToTensor())
-    inp_size = (1, 28, 28)
 else:
     raise ValueError(f"{args.dataset} not implemented yet")
 
