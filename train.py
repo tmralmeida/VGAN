@@ -3,7 +3,7 @@ from tqdm import tqdm
 import torch
 from torchvision import datasets, transforms
 from models.vgan import *
-from lib.vgan import *
+from utils.vgan import *
 
 
 
