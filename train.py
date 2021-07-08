@@ -2,9 +2,14 @@ import argparse
 from tqdm import tqdm
 import torch
 from torchvision import datasets, transforms
+from torchvision.utils import make_grid
+from torch.utils.tensorboard import SummaryWriter
 from models.vgan import *
 from utils.vgan import *
+from utils.common import evaluate
+from torchmetrics import FID
 import os
+from math import sqrt
 
 
 parser = argparse.ArgumentParser(description="Train VGAN")
@@ -117,15 +122,15 @@ args = parser.parse_args()
 
 # loading dataset
 if args.dataset == "CIFAR-10":
-    trans = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    ])
+    train_trans = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),])
     train_ds = datasets.CIFAR10(root = "./data", 
                                 train = True,
                                 download = False if os.path.isdir("data/cifar-10-batches-py") else True,
-                                transform = trans)
+                                transform = train_trans)
     inp_size = (3, 32, 32)
+    
 elif args.dataset == "MNIST":
     train_ds = datasets.MNIST(root = "./data", 
                               train = True,
@@ -142,7 +147,6 @@ train_dl = torch.utils.data.DataLoader(train_ds,
                                        num_workers = args.num_workers,
                                        pin_memory = True)
 
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # model
@@ -154,13 +158,14 @@ if args.model == "VGAN":
 # optimizers
 opt_d = torch.optim.RMSprop(disc.parameters(), lr = args.lr_disc)
 opt_g = torch.optim.RMSprop(gen.parameters(), lr = args.lr_gen)
-
+metric = FID().to(device)
+writer = SummaryWriter()
 
 for epoch in range(args.epochs):
     losses_g, losses_d, beta = [],[], args.beta
     with tqdm(train_dl, unit="batch") as tepoch:
-        for batch in tepoch:
-            tepoch.set_description(f"Epoch {epoch}")
+        for num_iter,batch in enumerate(tepoch):
+            tepoch.set_description(f"Epoch {epoch + 1}")
             real_imgs, _ = batch
             real_imgs, bs = real_imgs.to(device), real_imgs.shape[0]
             loss_d, loss_kl = train_discriminator(disc, gen, real_imgs, opt_d, beta, device, bs = bs) 
@@ -168,10 +173,21 @@ for epoch in range(args.epochs):
             beta = max(0., beta + args.alpha * loss_kl)
             losses_d.append(loss_d)
             losses_g.append(loss_g)
-            tepoch.set_postfix(loss_disc = sum(losses_d)/(len(losses_d)),loss_gen = sum(losses_g)/(len(losses_g)))
+            mean_ld = sum(losses_d)/(len(losses_d))
+            mean_lg = sum(losses_g)/(len(losses_g))
+            tepoch.set_postfix(l_d = mean_ld,l_g = mean_lg)
+            writer.add_scalar('l_g', mean_lg, num_iter)
+            writer.add_scalar('l_d', mean_ld, num_iter)
+            writer.add_scalar('beta', beta, num_iter)
         if (epoch == 0) or ((epoch + 1) % 10 == 0):
-            generate_samples(epoch, gen, device, nimgs_save = args.nimgs_save, log_dir=os.path.join(args.save_dir, args.dataset))
+            samples_tboard = generate_samples(gen, device, epoch, os.path.join(args.save_dir, args.dataset), n_imgs = args.nimgs_save)
+        fake_imgs = generate_samples(gen, device, n_imgs = bs).to(device)
+        writer.add_image("Fake image", make_grid(samples_tboard, nrow=int(sqrt(args.nimgs_save)), padding = 1), epoch)
+        fid = evaluate(metric, fake_imgs, real_imgs, device)
+        print("FID=", fid.item())
+        writer.add_scalar("fid", fid.item(), epoch)
         
+writer.close()
         
 torch.save(gen.state_dict(), os.path.join(args.save_dir, f'{args.dataset}/gen.pth'))
 torch.save(disc.state_dict(), os.path.join(args.save_dir, f'{args.dataset}/disc.pth'))

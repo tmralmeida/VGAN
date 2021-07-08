@@ -50,11 +50,15 @@ def train_generator(discriminator, generator, real_imgs, optimizer, device, bs =
     
     return loss.item()
 
-def generate_samples(epoch, gen, device, ls = 256, nimgs_save = 64, log_dir = "logs"):
+def generate_samples(gen, device, *save_info, ls = 256, n_imgs = 64, log_dir = "logs"):
+    if len(save_info) == 2:
+        epoch = save_info[0]
+        log_dir = save_info[1]
+        os.makedirs(log_dir, exist_ok=True)
     gen.eval()
-    os.makedirs(log_dir, exist_ok=True)
-    
-    z = torch.randn((nimgs_save,ls), device = device)
+    z = torch.randn((n_imgs,ls), device = device)
     with torch.no_grad():
         fake_img = gen(z).to("cpu")
-    save_image(fake_img, os.path.join(log_dir, f"ep_{epoch}.png"), nrow=int(sqrt(nimgs_save)))
+    if len(save_info) == 2:
+        save_image(fake_img, os.path.join(log_dir, f"ep_{epoch}.png"), nrow=int(sqrt(n_imgs)))
+    return fake_img
