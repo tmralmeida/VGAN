@@ -61,7 +61,7 @@ parser.add_argument(
 parser.add_argument(
     "--lr_gen",
     "-lg",
-    type=int,
+    type=float,
     default=1e-4,
     required=False,
     help="Learning rate for the generator"
@@ -123,7 +123,7 @@ args = parser.parse_args()
 comm_tf = [transforms.ToTensor()]
 # loading dataset
 if args.dataset == "CIFAR-10":
-    comm_tf += [transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))]
+    comm_tf += [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     train_ds = datasets.CIFAR10(root = "./data", 
                                 train = True,
                                 download = False if os.path.isdir("data/cifar-10-batches-py") else True,
@@ -180,7 +180,7 @@ for epoch in range(args.epochs):
             samples_tboard = generate_samples(gen, device, epoch, os.path.join(args.save_dir, args.dataset), n_imgs = args.nimgs_save)
         fake_imgs = generate_samples(gen, device, n_imgs = bs).to(device)
         writer.add_image("Fake image", make_grid(samples_tboard, nrow=int(sqrt(args.nimgs_save)), padding = 1), epoch)
-        fid = evaluate(metric, fake_imgs, real_imgs, device)
+        fid = evaluate(metric, fake_imgs, real_imgs)
         print("FID=", fid.item())
         writer.add_scalar("fid", fid.item(), epoch)
         
