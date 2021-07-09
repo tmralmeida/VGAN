@@ -120,12 +120,10 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-comm_tf = [
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5), )
-]
+comm_tf = [transforms.ToTensor()]
 # loading dataset
 if args.dataset == "CIFAR-10":
+    comm_tf += [transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))]
     train_ds = datasets.CIFAR10(root = "./data", 
                                 train = True,
                                 download = False if os.path.isdir("data/cifar-10-batches-py") else True,
