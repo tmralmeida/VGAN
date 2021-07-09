@@ -6,7 +6,7 @@ from torchvision.utils import make_grid
 from torch.utils.tensorboard import SummaryWriter
 from models.vgan import *
 from utils.vgan import *
-from utils.common import evaluate
+from utils.common import evaluate, FER2013GAN
 from torchmetrics import FID
 import os
 from math import sqrt
@@ -21,7 +21,7 @@ parser.add_argument(
     default="CIFAR-10",
     required=False,
     help="Dataset name",
-    choices=["CIFAR-10", "FER-2013"]
+    choices=["CIFAR-10", "FER-13"]
 )
 
 parser.add_argument(
@@ -120,19 +120,24 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+comm_tf = [
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5), )
+]
 # loading dataset
 if args.dataset == "CIFAR-10":
-    train_trans = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),])
     train_ds = datasets.CIFAR10(root = "./data", 
                                 train = True,
                                 download = False if os.path.isdir("data/cifar-10-batches-py") else True,
-                                transform = train_trans)
-    inp_size = (3, 32, 32)
-    
+                                transform = transforms.Compose(comm_tf))
+elif args.dataset == "FER-13":
+    comm_tf += [transforms.Resize((32,32))]
+    train_ds = FER2013GAN(root = "./data/fer13/train/",
+                          transform = transforms.Compose(comm_tf))
 else:
     raise ValueError(f"{args.dataset} not implemented yet")
+
+inp_size = (3, 32, 32)
 
 # dataloader
 train_dl = torch.utils.data.DataLoader(train_ds,
