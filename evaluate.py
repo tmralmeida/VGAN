@@ -6,7 +6,7 @@ from models.vgan import *
 from utils.vgan import *
 from utils.common import evaluate, FER2013GAN
 from torchmetrics import FID
-
+from torch.utils.data import Subset
 
 parser = argparse.ArgumentParser(description="Evaluate VGAN")
 
@@ -92,12 +92,14 @@ else:
 
 inp_size = (3, 32, 32)
 
+samp_dl = Subset(test_ds, torch.arange(args.nsamples))
 # dataloader
-test_dl = torch.utils.data.DataLoader(test_ds,
+test_dl = torch.utils.data.DataLoader(samp_dl,
                                       args.batch_size,
                                       shuffle = True, 
                                       num_workers = args.num_workers,
                                       pin_memory = True)
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -114,11 +116,8 @@ disc.load_state_dict(d_state_dict)
 
 
 metric = FID().to(device)
-with tqdm(test_dl, unit="batch", total=int(args.nsamples/args.batch_size)) as titer:
-    for idx, batch in enumerate(titer):
-        if idx == args.nsamples:
-            titer.close()
-            break
+with tqdm(test_dl, unit="batch") as titer:
+    for batch in titer:
         real_imgs, _ = batch
         bs = real_imgs.shape[0]
         fake_imgs = generate_samples(gen, device, n_imgs = bs)
