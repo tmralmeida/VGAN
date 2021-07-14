@@ -7,12 +7,8 @@ from utils.vgan import generate_samples
 
 
 def evaluate(fid, fake_imgs, real_imgs):
-    fake_imgs = (fake_imgs*255).type(torch.uint8)
-    real_imgs = (real_imgs*255).type(torch.uint8)
-    
-    fid.update(fake_imgs, real=False)
-    fid.update(real_imgs, real=True)
-    
+    fid.update((fake_imgs*255).type(torch.uint8), real=False)
+    fid.update((real_imgs*255).type(torch.uint8), real=True)
     res = fid.compute()
     return res
     
