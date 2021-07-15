@@ -169,7 +169,7 @@ for epoch in range(args.epochs):
             real_imgs, bs = real_imgs.to(device), real_imgs.shape[0]
             loss_d, loss_kl = train_discriminator(disc, gen, real_imgs, opt_d, beta, device, bs, model=args.model) 
             loss_g = train_generator(disc, gen, real_imgs, opt_g, device, bs = bs)
-            beta = max(0., beta + args.alpha * loss_kl)
+            beta = max(0., beta + args.alpha * loss_kl - args.ic)
             losses_d.append(loss_d)
             losses_g.append(loss_g)
             mean_ld = sum(losses_d)/(len(losses_d))

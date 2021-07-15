@@ -6,7 +6,7 @@ from math import sqrt
 from utils.vgan_gp import compute_grad2
 
 def vdb_loss(preds, ys, mean, logvar):
-    d_loss = torch.mean(F.binary_cross_entropy(preds, ys))
+    d_loss = F.binary_cross_entropy(preds, ys)
     kl_loss = torch.distributions.kl_divergence(torch.distributions.Normal(mean, torch.sqrt(logvar.exp())), torch.distributions.Normal(0,1)).mean()
     return d_loss, kl_loss
 
@@ -28,7 +28,8 @@ def train_discriminator(discriminator, generator, real_imgs, optimizer, beta, de
     
     # Evaluate on fake images
     z = torch.randn((bs, ls), device = device)
-    fake_imgs = generator(z)
+    with torch.no_grad():
+        fake_imgs = generator(z)
     fake_imgs.requires_grad_()
     fake_preds, mean, logvar = discriminator(fake_imgs)
     fake_loss, fake_kl = vdb_loss(fake_preds, fake_ys, mean, logvar)
