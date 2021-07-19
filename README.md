@@ -37,13 +37,22 @@ python train.py --dataset CIFAR-10 --batch_size 128 --epochs 200
 ### Running: Evaluation
 
 ```
-python evaluate.py --dataset FER-13 --generator_path logs/FER-13/gen.pth --discriminator_path logs/FER-13/disc.pth
+python evaluate.py --dataset FER-13 --generator_path logs/FER-13/VGAN/gen.pth --discriminator_path logs/FER-13/VGAN/disc.pth
 ```
 
 
 ## Results
 
-**FER-13 dataset**
+**FID score on 10k samples**
+
+| Dataset/Method       |   VGAN     |    VGAN-GP  |
+| ------------------   | :------:   |   :------:  |
+| CIFAR-10             |    25.1    |  **16.9**   |
+| FER-13               |    90.5    |  **80.6**  |
+
+
+
+**Example for FER-13 dataset**
 
 <p float="left">
   <img src="docs/fer13.gif" width="350" height="350" />
