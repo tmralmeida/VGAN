@@ -43,5 +43,8 @@ python evaluate.py --dataset FER-13 --generator_path logs/FER-13/gen.pth --discr
 
 ## Results
 
-<img src="docs/fer13.gif" width="175" height="175" />
+**FER-13 dataset**
 
+<img src="docs/fer13.gif" width="350" height="350" />
+
+<img src="docs/fer-fid.png" width="350" height="350" />
