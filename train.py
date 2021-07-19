@@ -5,8 +5,8 @@ from torchvision import datasets, transforms
 from torchvision.utils import make_grid
 from torch.utils.tensorboard import SummaryWriter
 from models.vgan import *
-from utils.vgan import *
-from utils.common import evaluate, FER2013GAN
+from utils.common import *
+from utils.datasets import *
 from torchmetrics import FID
 import os
 from math import sqrt
