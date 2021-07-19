@@ -9,6 +9,7 @@ It has been tested on both RGB and grayscale datatypes through CIFAR-10 and FER-
 * [torchvision 0.8.1](https://pytorch.org/vision/stable/index.html)
 * [torchmetrics 0.4.1](https://torchmetrics.readthedocs.io/en/latest/pages/quickstart.html#install) 
 * [tqdm 4.54.1](https://github.com/tqdm/tqdm)
+* [scipy 1.5.2](https://torchmetrics.readthedocs.io/en/latest/references/modules.html#image-metrics)
 
 
 ## Usage
@@ -47,10 +48,10 @@ python evaluate.py --dataset FER-13 --generator_path logs/FER-13/VGAN/gen.pth --
 
 | Dataset/Method       |   VGAN     |    VGAN-GP  |
 | ------------------   | :------:   |   :------:  |
-| CIFAR-10             |    25.1    |  **16.9**   |
+| CIFAR-10             |    25.1    |  **17.1**   |
 | FER-13               |    90.5    |  **80.6**  |
 
-
+Note: FID score based on the implementation of [torchmetrics](https://torchmetrics.readthedocs.io/en/latest/pages/quickstart.html#install). 
 
 **Example for FER-13 dataset**
 
