@@ -102,6 +102,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--wgp",
+    type=float,
+    default=10.,
+    required=False,
+    help="Value for gradient penalty param"
+)
+
+parser.add_argument(
     "--save_dir",
     type=str,
     default="logs",
@@ -167,7 +175,7 @@ for epoch in range(args.epochs):
             tepoch.set_description(f"Epoch {epoch + 1}")
             real_imgs, _ = batch
             real_imgs, bs = real_imgs.to(device), real_imgs.shape[0]
-            loss_d, loss_kl = train_discriminator(disc, gen, real_imgs, opt_d, beta, device, bs, model=args.model) 
+            loss_d, loss_kl = train_discriminator(disc, gen, real_imgs, opt_d, beta, device, bs, model=args.model, w_gp=args.wgp) 
             loss_g = train_generator(disc, gen, real_imgs, opt_g, device, bs = bs)
             beta = max(0., beta - args.alpha * (args.ic - loss_kl))
             losses_d.append(loss_d)
