@@ -3,8 +3,8 @@ from tqdm import tqdm
 import torch
 from torchvision import datasets, transforms
 from models.vgan import *
-from utils.vgan import *
-from utils.common import evaluate, FER2013GAN
+from utils.common import *
+from utils.datasets import * 
 from torchmetrics import FID
 from torch.utils.data import Subset
 
