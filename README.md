@@ -5,10 +5,10 @@ It has been tested on both RGB and grayscale datatypes through CIFAR-10 and FER-
 
 ## Requirements
 
-* [pytorch 1.9.0](#https://pytorch.org/)
-* [torchvision 0.8.1](#https://pytorch.org/vision/stable/index.html)
-* [torchmetrics 0.4.1](#https://torchmetrics.readthedocs.io/en/latest/pages/quickstart.html#install) 
-* [tqdm 4.54.1](#https://github.com/tqdm/tqdm)
+* [pytorch 1.9.0](https://pytorch.org/)
+* [torchvision 0.8.1](https://pytorch.org/vision/stable/index.html)
+* [torchmetrics 0.4.1](https://torchmetrics.readthedocs.io/en/latest/pages/quickstart.html#install) 
+* [tqdm 4.54.1](https://github.com/tqdm/tqdm)
 
 
 ## Usage
@@ -39,3 +39,9 @@ python train.py --dataset CIFAR-10 --batch_size 128 --epochs 200
 ```
 python evaluate.py --dataset FER-13 --generator_path logs/FER-13/gen.pth --discriminator_path logs/FER-13/disc.pth
 ```
+
+
+## Results
+
+<img src="docs/fer13.gif" width="175" height="175" />
+
