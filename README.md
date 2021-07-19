@@ -51,7 +51,7 @@ python evaluate.py --dataset FER-13 --generator_path logs/FER-13/VGAN/gen.pth --
 | CIFAR-10             |    25.1    |  **17.1**   |
 | FER-13               |    90.5    |  **80.6**  |
 
-Note: FID score based on the implementation of [torchmetrics](https://torchmetrics.readthedocs.io/en/latest/pages/quickstart.html#install). 
+Note: FID score based on the implementation of [torchmetrics](https://torchmetrics.readthedocs.io/en/latest/references/modules.html#image-metrics). 
 
 **Example for FER-13 dataset**
 
