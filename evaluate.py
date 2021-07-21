@@ -104,7 +104,7 @@ test_dl = torch.utils.data.DataLoader(samp_dl,
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # model
-if args.model == "VGAN":
+if args.model == "VGAN" or args.model == "VGAN-GP":
     tensor_size = (args.batch_size, *inp_size)
     gen = Generator(tensor_size).to(device)
     disc = Discriminator(inp_size[0], device).to(device)
