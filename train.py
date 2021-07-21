@@ -168,10 +168,12 @@ metric = FID().to(device)
 writer = SummaryWriter()
 path = os.path.join(args.dataset, args.model)
 
+num_iter = 0
 for epoch in range(args.epochs):
     losses_g, losses_d, beta = [],[], args.beta
     with tqdm(train_dl, unit="batch") as tepoch:
-        for num_iter,batch in enumerate(tepoch):
+        for batch in tepoch:
+            num_iter += 1
             tepoch.set_description(f"Epoch {epoch + 1}")
             real_imgs, _ = batch
             real_imgs, bs = real_imgs.to(device), real_imgs.shape[0]
