@@ -124,3 +124,4 @@ with tqdm(test_dl, unit="batch") as titer:
         fid = evaluate(metric, fake_imgs.to(device), real_imgs.to(device))
         result = "{:.2F}".format(fid.detach().item())
         titer.set_postfix(FID = result)
+    metric.reset()
